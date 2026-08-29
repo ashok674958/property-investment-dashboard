@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Property Investment Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:Arial,sans-serif;background:#f5f7fb;color:#172033;margin:0}header{background:#111827;color:white;padding:24px}main{max-width:1150px;margin:auto;padding:16px}.card{background:white;border:1px solid #ddd;border-radius:12px;padding:16px;margin:14px 0;overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left;white-space:nowrap}th{background:#f3f4f6}.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}.chart{height:300px}.note{color:#667085;font-size:13px;line-height:1.5}@media(max-width:700px){.charts{grid-template-columns:1fr}.chart{height:270px}}
+</style></head><body>
+<header><h1>Property Investment Dashboard</h1><div>Australian investment shortlist • 29 Aug 2026 • 5–10 year view</div></header><main>
+<div class="card"><h2>Current ranking</h2><table><tr><th>Rank</th><th>Property</th><th>Price</th><th>Rent</th><th>Yield</th><th>Land</th><th>Rating</th></tr>
+<tr><td>1</td><td>2H Mansfield, Beaconsfield QLD</td><td>$635k</td><td>$620/wk</td><td>5.08%</td><td>443m²</td><td>8.9/10</td></tr>
+<tr><td>2</td><td>12 Deakin, Gracemere QLD</td><td>~$570k target</td><td>$610–630/wk</td><td>~5.6%</td><td>819m²</td><td>8.7–9.0</td></tr>
+<tr><td>3</td><td>288 Murray, Allenstown QLD</td><td>~$539k</td><td>$580–600/wk</td><td>~5.6%</td><td>674m²</td><td>8.7</td></tr>
+<tr><td>4</td><td>2 Mimosa, Gracemere QLD</td><td>$600k</td><td>$580/wk</td><td>5.03%</td><td>598m²</td><td>8.5</td></tr>
+<tr><td>5</td><td>71 Paringa, Newnham TAS</td><td>$620k</td><td>$580/wk</td><td>4.87%</td><td>761m²</td><td>8.5</td></tr>
+<tr><td>6</td><td>7 Carlisle, Waverley TAS</td><td>~$600k</td><td>~$550/wk</td><td>~4.77%</td><td>558m²</td><td>8.2</td></tr>
+<tr><td>—</td><td>4 Borg, Beaconsfield QLD</td><td>~$700k</td><td>Unknown</td><td>—</td><td>—</td><td>~8.0</td></tr>
+<tr><td>—</td><td>8 Spinifex, Risdon Vale TAS</td><td>$610k+</td><td>$530–580/wk</td><td>~4.5–4.9%</td><td>691m²</td><td>~8.0</td></tr>
+</table></div>
+
+<div class="charts">
+<div class="card"><h3>Purchase price</h3><div class="chart"><canvas id="price"></canvas></div></div>
+<div class="card"><h3>Gross yield</h3><div class="chart"><canvas id="yield"></canvas></div></div>
+<div class="card"><h3>Land size</h3><div class="chart"><canvas id="land"></canvas></div></div>
+<div class="card"><h3>Weekly rent</h3><div class="chart"><canvas id="rent"></canvas></div></div>
+</div>
+
+<div class="card"><h2>2H Mansfield cash-flow model</h2><table>
+<tr><th>Assumption</th><th>80% LVR</th><th>70% LVR</th></tr>
+<tr><td>Purchase</td><td>$635,000</td><td>$635,000</td></tr><tr><td>Loan</td><td>$508,000</td><td>$444,500</td></tr>
+<tr><td>Interest-only rate</td><td>6.39%</td><td>6.20%</td></tr><tr><td>Current rent</td><td>$620/wk</td><td>$620/wk</td></tr>
+<tr><td>Insurance</td><td>$2,800</td><td>$2,800</td></tr><tr><td>Council</td><td>$3,700</td><td>$3,700</td></tr>
+<tr><td>Water</td><td>$1,500</td><td>$1,500</td></tr><tr><td>Management</td><td>8%</td><td>8%</td></tr>
+<tr><td>Vacancy</td><td>2%</td><td>2%</td></tr><tr><td>Maintenance assumption</td><td>$2,000</td><td>$2,000</td></tr>
+<tr><td><b>Estimated cash flow</b></td><td><b>≈ -$14.1k/yr</b></td><td><b>≈ -$8.5k/yr</b></td></tr>
+</table><p class="note">Cash flow is pre-tax. It excludes depreciation and tax effects. The 80% figure uses the earlier 6.39% rate; the 70% figure uses the later 6.20% rate.</p></div>
+
+<div class="card"><h2>Key decision notes</h2><ul class="note">
+<li><b>Mansfield:</b> 2013 build, 3/2/2, proven $620 rent, potential $650–700 on renewal; partial 1% AEP flood touches backyard only; insurance quote about $2,800 including flood cover.</li>
+<li><b>12 Deakin:</b> 819m², 4 bedrooms and powered 2-bay shed; strongest value if bought around $570k and $610–630 rent is genuinely achievable.</li>
+<li><b>2 Mimosa:</b> at exactly $600k it becomes competitive; 598m² and no reported flood overlay, but only 1 bathroom and rent appraisal needs confirmation.</li>
+<li><b>288 Murray:</b> 674m² and renovated 4-bedroom house at low entry price; stump/foundation inspection is essential.</li>
+<li><b>Tasmania:</b> Paringa has 761m²; Carlisle benefits from tight Waverley rental supply; older Tasmanian houses need careful maintenance assessment.</li>
+</ul></div>
+<p class="note">This dashboard is based on information discussed in ChatGPT. Update it whenever prices, rent, insurance or property status changes. It is not financial, tax, valuation or building advice.</p>
+</main>
+<script>
+const labels=["Mansfield","Deakin","288 Murray","Mimosa","Paringa","Carlisle","Spinifex"];
+const price=[635,570,539,600,620,600,610], yield=[5.08,5.65,5.65,5.03,4.87,4.77,4.73], land=[443,819,674,598,761,558,691], rent=[620,620,590,580,580,550,555];
+function c(id,data,unit){new Chart(document.getElementById(id),{type:"bar",data:{labels,datasets:[{data}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>unit==="%"?v+"%":unit==="k"?"$"+v+"k":unit==="m"?"$"+v:""+v}}}}})}
+c("price",price,"k");c("yield",yield,"%");c("land",land,"");c("rent",rent,"");
+</script></body></html>
