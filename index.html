@@ -1,50 +1,1012 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Property Investment Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shortlist — Investment Property Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
-body{font-family:Arial,sans-serif;background:#f5f7fb;color:#172033;margin:0}header{background:#111827;color:white;padding:24px}main{max-width:1150px;margin:auto;padding:16px}.card{background:white;border:1px solid #ddd;border-radius:12px;padding:16px;margin:14px 0;overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left;white-space:nowrap}th{background:#f3f4f6}.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}.chart{height:300px}.note{color:#667085;font-size:13px;line-height:1.5}@media(max-width:700px){.charts{grid-template-columns:1fr}.chart{height:270px}}
-</style></head><body>
-<header><h1>Property Investment Dashboard</h1><div>Australian investment shortlist • 29 Aug 2026 • 5–10 year view</div></header><main>
-<div class="card"><h2>Current ranking</h2><table><tr><th>Rank</th><th>Property</th><th>Price</th><th>Rent</th><th>Yield</th><th>Land</th><th>Rating</th></tr>
-<tr><td>1</td><td>2H Mansfield, Beaconsfield QLD</td><td>$635k</td><td>$620/wk</td><td>5.08%</td><td>443m²</td><td>8.9/10</td></tr>
-<tr><td>2</td><td>12 Deakin, Gracemere QLD</td><td>~$570k target</td><td>$610–630/wk</td><td>~5.6%</td><td>819m²</td><td>8.7–9.0</td></tr>
-<tr><td>3</td><td>288 Murray, Allenstown QLD</td><td>~$539k</td><td>$580–600/wk</td><td>~5.6%</td><td>674m²</td><td>8.7</td></tr>
-<tr><td>4</td><td>2 Mimosa, Gracemere QLD</td><td>$600k</td><td>$580/wk</td><td>5.03%</td><td>598m²</td><td>8.5</td></tr>
-<tr><td>5</td><td>71 Paringa, Newnham TAS</td><td>$620k</td><td>$580/wk</td><td>4.87%</td><td>761m²</td><td>8.5</td></tr>
-<tr><td>6</td><td>7 Carlisle, Waverley TAS</td><td>~$600k</td><td>~$550/wk</td><td>~4.77%</td><td>558m²</td><td>8.2</td></tr>
-<tr><td>—</td><td>4 Borg, Beaconsfield QLD</td><td>~$700k</td><td>Unknown</td><td>—</td><td>—</td><td>~8.0</td></tr>
-<tr><td>—</td><td>8 Spinifex, Risdon Vale TAS</td><td>$610k+</td><td>$530–580/wk</td><td>~4.5–4.9%</td><td>691m²</td><td>~8.0</td></tr>
-</table></div>
+  :root{
+    --bg:#11161a;
+    --bg-elev:#171f25;
+    --bg-elev-2:#1d262d;
+    --rule:#2a333a;
+    --text:#e8e3d6;
+    --text-dim:#8b939b;
+    --text-faint:#5c646b;
+    --qld:#c1893c;
+    --qld-dim:#8a6530;
+    --tas:#4f8291;
+    --tas-dim:#3a5f6a;
+    --good:#7d9e78;
+    --warn:#b3654f;
+    --paper:#12181c;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--qld);color:#11161a;}
+  a{color:inherit;}
 
-<div class="charts">
-<div class="card"><h3>Purchase price</h3><div class="chart"><canvas id="price"></canvas></div></div>
-<div class="card"><h3>Gross yield</h3><div class="chart"><canvas id="yield"></canvas></div></div>
-<div class="card"><h3>Land size</h3><div class="chart"><canvas id="land"></canvas></div></div>
-<div class="card"><h3>Weekly rent</h3><div class="chart"><canvas id="rent"></canvas></div></div>
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    border-bottom:1px solid var(--rule);
+    padding:64px 0 40px;
+  }
+  .hero-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .hero-kicker{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:.02em;
+    color:var(--text-dim);
+    margin:0 0 18px;
+  }
+  .hero-kicker b{color:var(--text);font-weight:500;}
+  h1.hero-title{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:clamp(34px,5vw,58px);
+    line-height:1.05;
+    margin:0 0 14px;
+    letter-spacing:-.01em;
+    max-width:760px;
+  }
+  .hero-title em{
+    font-style:italic;
+    font-weight:400;
+    color:var(--qld);
+  }
+  .hero-sub{
+    color:var(--text-dim);
+    font-size:16.5px;
+    max-width:520px;
+    margin:0;
+  }
+  .hero-figs{
+    display:flex;
+    gap:36px;
+    margin-top:8px;
+    flex-shrink:0;
+  }
+  .fig{text-align:right;}
+  .fig .n{
+    font-family:'Fraunces',serif;
+    font-size:34px;
+    font-weight:500;
+    display:block;
+    line-height:1;
+  }
+  .fig .l{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--text-faint);
+    display:block;
+    margin-top:6px;
+  }
+
+  /* ---------- CONTROLS ---------- */
+  .controls{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+    padding:22px 0;
+    border-bottom:1px solid var(--rule);
+  }
+  .pillrow{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    padding:7px 14px;
+    border:1px solid var(--rule);
+    border-radius:100px;
+    background:transparent;
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .pill:hover{color:var(--text);border-color:var(--text-faint);}
+  .pill.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+  .pill.qld.active{background:var(--qld);border-color:var(--qld);color:#181008;}
+  .pill.tas.active{background:var(--tas);border-color:var(--tas);color:#0b171a;}
+
+  select#sortSel{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    background:var(--bg-elev);
+    color:var(--text);
+    border:1px solid var(--rule);
+    border-radius:6px;
+    padding:8px 10px;
+  }
+
+  /* ---------- MAIN GRID ---------- */
+  .analysis{
+    display:grid;
+    grid-template-columns:1.35fr 1fr;
+    gap:0;
+    border-bottom:1px solid var(--rule);
+  }
+  .chart-col{
+    padding:32px 32px 32px 0;
+    border-right:1px solid var(--rule);
+  }
+  .detail-col{
+    padding:32px 0 32px 32px;
+  }
+  .panel-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--text-faint);
+    margin:0 0 4px;
+  }
+  .panel-title{
+    font-family:'Fraunces',serif;
+    font-size:20px;
+    font-weight:500;
+    margin:0 0 18px;
+  }
+  .chart-box{position:relative;height:400px;}
+  .chart-note{
+    font-size:12.5px;
+    color:var(--text-faint);
+    margin-top:14px;
+    line-height:1.5;
+  }
+
+  /* detail card */
+  #detailCard{min-height:400px;}
+  .d-addr{
+    font-family:'Fraunces',serif;
+    font-size:24px;
+    font-weight:500;
+    margin:0 0 2px;
+    line-height:1.15;
+  }
+  .d-loc{
+    font-size:13.5px;
+    color:var(--text-dim);
+    margin:0 0 16px;
+  }
+  .d-tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    padding:3px 9px;
+    border-radius:100px;
+    margin-right:6px;
+    margin-bottom:16px;
+  }
+  .tag-best{background:rgba(125,158,120,.18);color:var(--good);}
+  .tag-strong{background:rgba(193,137,60,.18);color:var(--qld);}
+  .tag-watch{background:rgba(179,101,79,.18);color:var(--warn);}
+  .tag-normal{background:rgba(139,147,155,.15);color:var(--text-dim);}
+
+  .d-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px 10px;
+    padding:16px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    margin-bottom:16px;
+  }
+  .d-stat .n{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:16px;
+    display:block;
+  }
+  .d-stat .l{
+    font-size:11px;
+    color:var(--text-faint);
+    display:block;
+    margin-top:2px;
+  }
+  .d-section{margin-bottom:16px;}
+  .d-section h4{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--text-faint);
+    margin:0 0 8px;
+    font-weight:400;
+  }
+  .d-section ul{margin:0;padding-left:16px;font-size:13.5px;color:var(--text-dim);}
+  .d-section ul li{margin-bottom:4px;}
+  .d-section ul.risks li::marker{color:var(--warn);}
+  .d-section ul.feat li::marker{color:var(--good);}
+  .d-note{
+    font-size:13.5px;
+    color:var(--text-dim);
+    font-style:italic;
+    border-left:2px solid var(--qld-dim);
+    padding-left:12px;
+  }
+
+  /* ---------- TABLE ---------- */
+  .tablewrap{padding:36px 0;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{
+    text-align:left;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:400;
+    color:var(--text-faint);
+    padding:0 10px 10px;
+    border-bottom:1px solid var(--rule);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{color:var(--text-dim);}
+  tbody tr{
+    border-bottom:1px solid var(--rule);
+    cursor:pointer;
+    transition:background .12s;
+  }
+  tbody tr:hover{background:var(--bg-elev);}
+  tbody tr.selected{background:var(--bg-elev-2);}
+  tbody tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--qld);}
+  td{padding:12px 10px;vertical-align:middle;}
+  td.addr-cell b{font-weight:600;}
+  td.addr-cell span{display:block;font-size:11.5px;color:var(--text-faint);}
+  .badge-state{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    padding:2px 7px;
+    border-radius:4px;
+  }
+  .badge-state.QLD{background:rgba(193,137,60,.15);color:var(--qld);}
+  .badge-state.TAS{background:rgba(79,130,145,.18);color:var(--tas);}
+  td.num{font-family:'IBM Plex Mono',monospace;text-align:right;}
+  .rating-bar{
+    display:inline-block;
+    width:36px;height:4px;
+    background:var(--rule);
+    border-radius:2px;
+    position:relative;
+    margin-right:8px;
+    vertical-align:middle;
+  }
+  .rating-bar i{
+    position:absolute;left:0;top:0;height:100%;
+    background:var(--qld);
+    border-radius:2px;
+    display:block;
+  }
+
+  /* ---------- COMPARE ---------- */
+  .compare{padding:36px 0 60px;border-top:1px solid var(--rule);}
+  .compare-head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:16px;margin-bottom:22px;
+  }
+  .metricToggle{display:flex;gap:6px;}
+  .chart-box.compareBox{height:340px;}
+
+  .breakdown{padding:36px 0 20px;border-top:1px solid var(--rule);}
+  .breakdown-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+    margin-top:22px;
+  }
+  .bd-card{background:var(--bg);padding:22px;}
+  .bd-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--text-faint);
+    margin:0 0 14px;
+  }
+  .chart-box.small{height:220px;}
+  @media (max-width:860px){
+    .breakdown-grid{grid-template-columns:1fr;}
+  }
+
+  footer{
+    border-top:1px solid var(--rule);
+    padding:26px 0 50px;
+    font-size:12px;
+    color:var(--text-faint);
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  @media (max-width:860px){
+    .analysis{grid-template-columns:1fr;}
+    .chart-col{border-right:none;border-bottom:1px solid var(--rule);padding:28px 0;}
+    .detail-col{padding:28px 0;}
+    .hero-figs{gap:22px;}
+    .fig .n{font-size:26px;}
+    thead th:nth-child(4),td:nth-child(4){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-top">
+      <div>
+        <p class="hero-kicker">SHORTLIST REVIEW — PREPARED FOR BUYER'S AGENT · <b>24 properties</b> · QLD &amp; TAS</p>
+        <h1 class="hero-title">2H Mansfield Drive leads the field, at <em>$635k</em> for a 5.1% yield.</h1>
+        <p class="hero-sub">A working comparison of every property assessed this cycle — purchase economics, risk flags, and contract terms, ranked and cross-checked against the rest of the field.</p>
+      </div>
+      <div class="hero-figs">
+        <div class="fig"><span class="n">9.1</span><span class="l">TOP RATING</span></div>
+        <div class="fig"><span class="n">6.6%</span><span class="l">BEST YIELD</span></div>
+        <div class="fig"><span class="n">2</span><span class="l">UNDER OFFER / SOLD</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="pillrow" id="stateFilters">
+      <button class="pill active" data-state="ALL">All states</button>
+      <button class="pill qld" data-state="QLD">Queensland</button>
+      <button class="pill tas" data-state="TAS">Tasmania</button>
+      <button class="pill" data-flag="active-only">Active only</button>
+    </div>
+    <select id="sortSel">
+      <option value="rating">Sort — rating, high to low</option>
+      <option value="yield">Sort — gross yield, high to low</option>
+      <option value="price">Sort — price, low to high</option>
+      <option value="rent">Sort — weekly rent, high to low</option>
+    </select>
+  </div>
+
+  <section class="analysis">
+    <div class="chart-col">
+      <p class="panel-label">FIELD MAP</p>
+      <h3 class="panel-title">Price vs. gross yield, every active property</h3>
+      <div class="chart-box"><canvas id="scatterChart"></canvas></div>
+      <p class="chart-note">Point size reflects rating out of 10. Click a point — or a row in the table below — to open its full assessment. Ochre marks Queensland, teal marks Tasmania.</p>
+    </div>
+    <div class="detail-col">
+      <p class="panel-label">SELECTED PROPERTY</p>
+      <h3 class="panel-title">Full assessment</h3>
+      <div id="detailCard"></div>
+    </div>
+  </section>
+
+  <section class="tablewrap">
+    <p class="panel-label">RANKED SHORTLIST</p>
+    <h3 class="panel-title">Every property, side by side</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:32px">#</th>
+          <th>Address</th>
+          <th>State</th>
+          <th>Status</th>
+          <th class="num">Price</th>
+          <th class="num">Rent /wk</th>
+          <th class="num">Yield</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </section>
+
+  <section class="compare">
+    <div class="compare-head">
+      <div>
+        <p class="panel-label">HEAD TO HEAD</p>
+        <h3 class="panel-title" style="margin-bottom:0">Top 8 by rating</h3>
+      </div>
+      <div class="metricToggle pillrow" id="metricToggle">
+        <button class="pill active" data-metric="rating">Rating</button>
+        <button class="pill" data-metric="yield">Gross yield</button>
+        <button class="pill" data-metric="price">Price</button>
+      </div>
+    </div>
+    <div class="chart-box compareBox"><canvas id="compareChart"></canvas></div>
+  </section>
+
+  <section class="breakdown">
+    <p class="panel-label">FIELD COMPOSITION</p>
+    <h3 class="panel-title">The shortlist at a glance</h3>
+    <div class="breakdown-grid">
+      <div class="bd-card">
+        <p class="bd-title">By state</p>
+        <div class="chart-box small"><canvas id="stateDonut"></canvas></div>
+      </div>
+      <div class="bd-card">
+        <p class="bd-title">By status</p>
+        <div class="chart-box small"><canvas id="statusBar"></canvas></div>
+      </div>
+      <div class="bd-card">
+        <p class="bd-title">Avg. yield by state</p>
+        <div class="chart-box small"><canvas id="yieldByState"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    DOSSIER COMPILED FROM AGENT RESEARCH NOTES · FIGURES ARE ESTIMATES, CONFIRM BEFORE OFFER · UPDATED FOR PRESENTATION
+  </footer>
 </div>
 
-<div class="card"><h2>2H Mansfield cash-flow model</h2><table>
-<tr><th>Assumption</th><th>80% LVR</th><th>70% LVR</th></tr>
-<tr><td>Purchase</td><td>$635,000</td><td>$635,000</td></tr><tr><td>Loan</td><td>$508,000</td><td>$444,500</td></tr>
-<tr><td>Interest-only rate</td><td>6.39%</td><td>6.20%</td></tr><tr><td>Current rent</td><td>$620/wk</td><td>$620/wk</td></tr>
-<tr><td>Insurance</td><td>$2,800</td><td>$2,800</td></tr><tr><td>Council</td><td>$3,700</td><td>$3,700</td></tr>
-<tr><td>Water</td><td>$1,500</td><td>$1,500</td></tr><tr><td>Management</td><td>8%</td><td>8%</td></tr>
-<tr><td>Vacancy</td><td>2%</td><td>2%</td></tr><tr><td>Maintenance assumption</td><td>$2,000</td><td>$2,000</td></tr>
-<tr><td><b>Estimated cash flow</b></td><td><b>≈ -$14.1k/yr</b></td><td><b>≈ -$8.5k/yr</b></td></tr>
-</table><p class="note">Cash flow is pre-tax. It excludes depreciation and tax effects. The 80% figure uses the earlier 6.39% rate; the 70% figure uses the later 6.20% rate.</p></div>
-
-<div class="card"><h2>Key decision notes</h2><ul class="note">
-<li><b>Mansfield:</b> 2013 build, 3/2/2, proven $620 rent, potential $650–700 on renewal; partial 1% AEP flood touches backyard only; insurance quote about $2,800 including flood cover.</li>
-<li><b>12 Deakin:</b> 819m², 4 bedrooms and powered 2-bay shed; strongest value if bought around $570k and $610–630 rent is genuinely achievable.</li>
-<li><b>2 Mimosa:</b> at exactly $600k it becomes competitive; 598m² and no reported flood overlay, but only 1 bathroom and rent appraisal needs confirmation.</li>
-<li><b>288 Murray:</b> 674m² and renovated 4-bedroom house at low entry price; stump/foundation inspection is essential.</li>
-<li><b>Tasmania:</b> Paringa has 761m²; Carlisle benefits from tight Waverley rental supply; older Tasmanian houses need careful maintenance assessment.</li>
-</ul></div>
-<p class="note">This dashboard is based on information discussed in ChatGPT. Update it whenever prices, rent, insurance or property status changes. It is not financial, tax, valuation or building advice.</p>
-</main>
 <script>
-const labels=["Mansfield","Deakin","288 Murray","Mimosa","Paringa","Carlisle","Spinifex"];
-const price=[635,570,539,600,620,600,610], yield=[5.08,5.65,5.65,5.03,4.87,4.77,4.73], land=[443,819,674,598,761,558,691], rent=[620,620,590,580,580,550,555];
-function c(id,data,unit){new Chart(document.getElementById(id),{type:"bar",data:{labels,datasets:[{data}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>unit==="%"?v+"%":unit==="k"?"$"+v+"k":unit==="m"?"$"+v:""+v}}}}})}
-c("price",price,"k");c("yield",yield,"%");c("land",land,"");c("rent",rent,"");
-</script></body></html>
+const properties = [
+  {
+    id: 1, address: "2H Mansfield Drive", suburb: "Beaconsfield", state: "QLD", postcode: "4740",
+    status: "ACTIVE / AGREED", ranking: 1, rating: 9.1,
+    purchasePrice: 635000, askingPrice: null, offerPrice: 635000, rentPerWeek: 620,
+    rentalAppraisalLow: 650, rentalAppraisalHigh: 700,
+    bedrooms: 3, bathrooms: 2, parking: 2, landSqm: 443, buildingSqm: null, yearBuilt: 2013,
+    loanLVR: 80, loanRate: 6.39, loanType: "Interest only",
+    annualCouncil: 3700, annualWater: 1500, annualInsurance: 2800, propertyManagementPercent: 8,
+    maintenanceAllowance: 2000, vacancyAllowancePercent: 2,
+    grossYieldAtCurrentRent: 5.08,
+    estimatedValueLow: 640000, estimatedValueMid: 676000, estimatedValueHigh: 710000,
+    floodRisk: "1% AEP overlay touches backyard only; house not affected",
+    bushfireRisk: "Not identified as major concern", heritageRisk: "Not identified",
+    features: ["3 bedrooms","2 bathrooms","2 car","Approx. 443m² land","Approx. 2013 construction","Newer house","Currently rented at $620/week","Rental appraisal $650-$700/week","Good Beaconsfield location"],
+    risks: ["Small land size relative to Beaconsfield 3-bed median","Backyard touched by 1% AEP flood overlay","Insurance includes flood","Shared development history"],
+    contractIssues: ["Purchase price needs to be inserted into draft contract","Finance condition was 14 days","Building & pest condition 14 days","Settlement 45 days","QCAT tree matter disclosed","Seller disclosure statement provided","Residential tenancy applies","Last rent increase 25/07/2026","No pool","Smoke alarms and electrical safety switch installed"],
+    historicalSale: { price: 190000, year: 2012, note: "Likely development/land-stage transaction rather than completed-house value" },
+    recommendation: "BEST OVERALL", targetPrice: "Already agreed at $635k",
+    notes: "Preferred property. Strong balance of rent, newer construction, 2 bathrooms and reasonable purchase price."
+  },
+  {
+    id: 2, address: "44C Govind Court", suburb: "Gracemere", state: "QLD", postcode: "4702",
+    status: "ACTIVE", ranking: 2, rating: 8.8,
+    purchasePrice: 649000, askingPrice: 649000, offerPrice: null, rentPerWeek: 630,
+    rentalAppraisalLow: 630, rentalAppraisalHigh: 660,
+    bedrooms: 4, bathrooms: 2, parking: 2, landSqm: 654, buildingSqm: null, yearBuilt: 2021,
+    loanLVR: 80, loanRate: 6.39, loanType: "Interest only",
+    grossYieldAtRent630: 5.05, grossYieldAtRent650: 5.21, grossYieldAtRent660: 5.29,
+    annualCouncil: 4286, annualCouncilNote: "Approximate annualised figure from disclosed $2,143.25 half-year rates",
+    annualWater: null, annualInsurance: null, propertyManagementPercent: null, maintenanceAllowance: null,
+    floodRisk: "Seller disclosure does not answer flood; independent investigation required",
+    bushfireRisk: "No bushfire issue identified in disclosure", heritageRisk: "No heritage issue identified",
+    features: ["4 bedrooms","2 bathrooms","2 car","654m² land","Built 2021","Modern brick home","Large backyard","Covered rear deck","Air conditioning","End of shared driveway"],
+    risks: ["Shared driveway","Easements","Building covenants","High-voltage/electrical infrastructure needs confirmation","Flood risk needs independent confirmation"],
+    disclosure: ["Lot 503 SP291765","Title reference 51207139","Unregistered encumbrances disclosed","Building covenants in favour of EDG Highland Pty Ltd","Buyer required to sign deed of covenant","Statutory infrastructure easements","Energex","NBN Co","Rockhampton Regional Council","Telstra","No body corporate","No pool","No tree order","No heritage","No contamination disclosure"],
+    easements: ["719763867","719763878","719763884"], covenantPenalty: 10000,
+    recommendation: "STRONG", targetPrice: "$630k-$649k",
+    notes: "Very good newer 4/2/2 asset. Could challenge 2H if easement/shared-driveway/HV issues are clean."
+  },
+  {
+    id: 3, address: "19 Burwood Close", suburb: "Andergrove", state: "QLD", postcode: "4740",
+    status: "ACTIVE", ranking: 3, rating: 8.8,
+    purchasePrice: 630000, askingPrice: null, offerPrice: 630000, rentPerWeek: null,
+    rentalAppraisalLow: 750, rentalAppraisalHigh: 800,
+    bedrooms: 4, bathrooms: 1, parking: 5, landSqm: 801, buildingSqm: null, yearBuilt: 1984,
+    loanLVR: 80, loanRate: 6.39, loanType: "Interest only", solarKW: 6.5,
+    estimatedValue: 703000, estimatedRent: 740,
+    grossYieldAt750: 6.19, grossYieldAt800: 6.60,
+    floodRisk: "Flood overlay detected", bushfireRisk: null, heritageRisk: null,
+    features: ["4 bedrooms","1 bathroom","5 car capacity","801m² land","Large oversized shed","Double-bay shed","Double carport","Office/fifth-bedroom possibility","6.5kW solar"],
+    risks: ["Flood overlay","Actual flood extent needs checking","Insurance quote required","One bathroom"],
+    recommendation: "HIGH UPSIDE IF FLOOD CHECK PASSES", targetPrice: "$630k or below",
+    notes: "Potential wildcard. Could become #1 if flood and insurance are favourable."
+  },
+  {
+    id: 4, address: "47 Ronneby Road", suburb: "Newnham", state: "TAS", postcode: "7248",
+    status: "ACTIVE", ranking: 4, rating: 8.7,
+    purchasePrice: null, askingPriceLow: 590000, askingPriceHigh: 630000, rentPerWeek: 550,
+    rentalAppraisalLow: 550, rentalAppraisalHigh: 560,
+    bedrooms: 4, bathrooms: 2, parking: 2, landSqm: 701, buildingSqm: 135, yearBuilt: 1960,
+    loanLVR: 80, loanRate: null,
+    annualCouncil: 1841.45, annualWater: 1024,
+    estimatedValue: 635000, estimatedValueLow: 510000, estimatedValueHigh: 760000,
+    grossYieldAt590: 4.85, grossYieldAt600: 4.77, grossYieldAt620: 4.61, grossYieldAt630: 4.54,
+    floodRisk: "No flood overlay detected", bushfireRisk: "No bushfire overlay detected", heritageRisk: "No heritage overlay detected",
+    features: ["4 bedrooms","2 bathrooms","2 car","701m² land","135m² building","Solid brick","Rear extension from 1997","Original front portion","Ensuite","Pre-sale building inspection reportedly found no structural issues"],
+    risks: ["Built 1960","Older kitchen/interiors","Maintenance risk","Rental $550-$560 is below 4-bed suburb median"],
+    recentComparableSales: ["$801k - 54 Packham St","$750.1k - 9 Bonnard Ct","$740k - 30 Roberts Cres","$715k - 69 Viewbank Rd","$690k - 86 Franmaree Rd","$675k - 53 Roberts Cres","$621.5k - 16 Mallard Pl","$650k - 103 Viewbank Rd","$555k - 120 George Town Rd"],
+    recommendation: "GOOD VALUE AROUND $600k", targetPrice: "$600k-$610k", walkAwayPrice: "$630k",
+    notes: "Very attractive land/house combination but rent is weaker than 2H."
+  },
+  {
+    id: 5, address: "727 Main Road", suburb: "Berriedale", state: "TAS", postcode: "7011",
+    status: "ACTIVE", ranking: 5, rating: 8.7,
+    purchasePrice: 645000, askingPrice: 645000, rentPerWeek: 530, rentalAppraisalLow: 600, rentalAppraisalHigh: 600,
+    bedrooms: 3, bathrooms: 1, parking: 1, landSqm: 688, buildingSqm: 101, yearBuilt: 1959,
+    loanLVR: 80, loanRate: null,
+    grossYieldAt530: 4.27, grossYieldAt580: 4.68, grossYieldAt600: 4.84, estimatedRentMarket: 580,
+    floodRisk: "No flood overlay detected", bushfireRisk: "No bushfire overlay detected", heritageRisk: "No heritage overlay detected",
+    historicalSales: ["$362k - July 2020","$210k - 2015"],
+    features: ["3 bedrooms","1 bathroom","688m² land","101m² building","1959 build","Good Berriedale location"],
+    risks: ["Older house","Only 1 bathroom","$600 rental is appraisal rather than proven current rent","Actually leased for $530/week on 30 July 2026"],
+    recommendation: "GOOD BUT PRICE SENSITIVE", targetPrice: "$620k-$630k",
+    notes: "Better if negotiated below asking."
+  },
+  {
+    id: 6, address: "288 Murray Street", suburb: "Allenstown", state: "QLD", postcode: "4700",
+    status: "ACTIVE", ranking: 6, rating: 8.7,
+    askingPrice: 539000, purchasePrice: null, rentPerWeek: null, rentalAppraisalLow: 580, rentalAppraisalHigh: 600,
+    bedrooms: 4, bathrooms: 1, parking: 1, landSqm: 674, buildingSqm: null, yearBuilt: null,
+    construction: "Built on stumps",
+    features: ["4 bedrooms","1 bathroom","1 car","674m² land","Freshly painted","New kitchen","New bathroom","Hybrid flooring","Side access","Rear lane","Approx. 1 minute to train station"],
+    suburbMedian: 535000, fourBedMedian: 670000, fourBedRent: 645,
+    risks: ["Older/stump construction","One bathroom","Condition needs inspection"],
+    recommendation: "STRONG VALUE/CASHFLOW", targetPrice: "$530k-$550k",
+    notes: "Potentially one of the better cash-flow/value options."
+  },
+  {
+    id: 7, address: "11 Bucas Drive", suburb: "Bucasia", state: "QLD", postcode: "4750",
+    status: "ACTIVE", ranking: 7, rating: 8.5,
+    askingPrice: 669000, rentPerWeek: 640,
+    bedrooms: 3, bathrooms: 1, parking: 2, landSqm: 800, buildingSqm: 150,
+    loanLVR: 80, loanRate: 6.39, grossYield: 4.98,
+    estimatedValuePropTrack: 695000, estimatedValueDomain: 650000,
+    floodRisk: "No detected flood overlay", bushfireRisk: "No detected bushfire overlay", heritageRisk: "No detected heritage overlay",
+    features: ["Renovated","Approx. 150m² internal","800m² land","3 bedrooms","1 bathroom","2 car"],
+    suburbMedian: 705000, threeBedMedian: 689500,
+    risks: ["Only 1 bathroom","Rent $640 below some suburb-wide rental figures","Asking price relatively high"],
+    recommendation: "BETTER AROUND $640-$650K", targetPrice: "$640k-$650k",
+    notes: "Good suburb and land, but $669k is too full."
+  },
+  {
+    id: 8, address: "2 Mimosa Court", suburb: "Gracemere", state: "QLD", postcode: "4702",
+    status: "CONSIDERED", ranking: 8, rating: 8.5,
+    purchasePrice: 600000, rentPerWeek: null, rentalEstimateLow: 545, rentalEstimateHigh: 570,
+    bedrooms: 4, bathrooms: null, parking: null, grossYieldApprox: "4.5%-4.8%",
+    features: ["Gracemere location","4-bedroom property"],
+    risks: ["Lower rent than stronger alternatives","Less attractive than 44C Govind"],
+    recommendation: "SECONDARY OPTION", notes: "Previously considered around $600k."
+  },
+  {
+    id: 9, address: "7 Colston Street", suburb: "Claremont", state: "TAS", postcode: "7011",
+    status: "ACTIVE", ranking: 9, rating: 8.5,
+    askingPrice: 669000, rentPerWeek: null, rentalEstimate: 595,
+    bedrooms: 3, bathrooms: 1, parking: 6, landSqm: 640, buildingSqm: 104, yearBuilt: 1965,
+    estimatedValueDomain: 640000, estimatedValueLow: 550000, estimatedValueHigh: 730000, estimatedValuePropTrack: 599000,
+    grossYieldAt595: 4.62,
+    historicalSale: "$365k - 20 May 2020",
+    features: ["Mountain/valley views","Walkable to shops","Schools nearby","Transport nearby","Workshop/shed","Fenced garden","Air conditioning","Fireplace","640m² land"],
+    recentComparableSales: ["$680k - 20 Mason St","$670k - 51 Cleburne St","$684k - 20 Leighland Rd","$630k - 10 Westfield St","$639.5k - 18 Colston St","$607k - 24 Colston St"],
+    risks: ["1965 build","Only 1 bathroom","104m² internal","Asking price is full"],
+    recommendation: "BETTER AROUND $620K", targetPrice: "$620k",
+    notes: "Good land/location but not compelling at $669k+."
+  },
+  {
+    id: 10, address: "42 Berriedale Road", suburb: "Berriedale", state: "TAS", postcode: "7011",
+    status: "ACTIVE", ranking: 10, rating: 8.2,
+    askingPrice: "Mid-$600ks+", rentPerWeek: null,
+    bedrooms: 3, bathrooms: 1, parking: 2, landSqm: 534, yearBuilt: 1961,
+    historicalSale: "$357k - January 2019",
+    features: ["Modern kitchen","Large covered entertainment area","Opposite Berriedale shops","Bus access","Approx. 15 minutes to CBD"],
+    risks: ["Small 534m² land","Older build","One bathroom","Price in mid-$600ks"],
+    recommendation: "SECONDARY", notes: "Needs a strong rental appraisal to compete with 727 Main."
+  },
+  {
+    id: 11, address: "47 Gleadow Street", suburb: "Invermay", state: "TAS", postcode: "7248",
+    status: "UNDER OFFER", ranking: 11, rating: 8.2,
+    purchasePrice: null, askingPrice: "Around $600k-$610k", rentPerWeek: null,
+    bedrooms: 3, bathrooms: 1, parking: null, landSqm: null, yearBuilt: 1900,
+    features: ["Strong Invermay location","Good growth potential"],
+    risks: ["Built 1900","Very old property","High maintenance risk"],
+    recommendation: "GOOD LOCATION BUT HIGH MAINTENANCE", notes: "Reduced ranking mainly because of age."
+  },
+  {
+    id: 12, address: "4 Maroubra Circle", suburb: "Chigwell", state: "TAS", postcode: "7011",
+    status: "ACTIVE", ranking: 12, rating: 8.0,
+    askingPriceLow: 640000, askingPriceHigh: 650000, rentPerWeek: 580,
+    bedrooms: null, bathrooms: null, parking: null,
+    features: ["Currently leased","$580/week rent"],
+    risks: ["Price/rent combination weaker than top options","Older Tasmanian housing stock"],
+    recommendation: "SECONDARY", notes: "Below Mansfield on risk-adjusted basis."
+  },
+  {
+    id: 13, address: "191 Tarleton Street", suburb: "East Devonport", state: "TAS", postcode: "7310",
+    status: "SOLD / FRIEND'S PURCHASE", ranking: 13, rating: 8.0,
+    purchasePrice: 600000, rentPerWeek: 575,
+    bedrooms: 3, bathrooms: 1, parking: 4, landSqm: 815, grossYield: 4.98,
+    suburbMedian: 551500, threeBedMedian: 556500, threeBedRent: 520,
+    features: ["Renovated kitchen","Renovated bathroom","Insulation","Cladding","Deck","Large shed","Double carport","815m² land"],
+    recommendation: "GOOD", notes: "Friend purchased for $600k on 15 July 2026."
+  },
+  {
+    id: 14, address: "7 Whitbread Court", suburb: "Glenorchy", state: "TAS", postcode: "7010",
+    status: "SOLD", ranking: null, rating: null,
+    purchasePrice: null, askingPrice: 660000, rentPerWeek: null, rentalAppraisalLow: 600, rentalAppraisalHigh: 650,
+    bedrooms: 3, bathrooms: 1, parking: 3, landSqm: 697, yearBuilt: 1987,
+    potentialRentAfterImprovements: "650-$670/week",
+    improvementsSuggested: ["Internal painting","New window furnishings","New carpet"],
+    risks: ["Partial flood zone"],
+    recommendation: "SOLD / REMOVE FROM SHORTLIST", notes: "User's maximum offer was $660k but another buyer offered more."
+  },
+  {
+    id: 15, address: "71 Paringa Avenue", suburb: "Newnham", state: "TAS", postcode: "7248",
+    status: "CONSIDERED", ranking: null,
+    purchasePriceTarget: 620000, rentPerWeek: 580,
+    bedrooms: 3, bathrooms: null, parking: null,
+    suburbHouseMedian: 621000, suburbThreeBedMedian: 620000, suburbThreeBedGrowth: "20.4%",
+    recommendation: "POTENTIAL", notes: "Considered if negotiated to around $620k."
+  },
+  {
+    id: 16, address: "6 Parua Road", suburb: "Newnham", state: "TAS", postcode: "7248",
+    status: "ACTIVE", ranking: null, rating: 8.2,
+    askingPrice: 550000, rentPerWeek: 520,
+    bedrooms: 3, bathrooms: 1, parking: 2, landSqm: 642, buildingSqm: 97, yearBuilt: 1961,
+    grossYieldAt550: 4.92, grossYieldAt560: 4.83, grossYieldAt570: 4.75, grossYieldAt580: 4.66, grossYieldAt590: 4.58, grossYieldAt600: 4.51,
+    historicalSales: ["$265k - March 2019","$191.5k - April 2013","$72k - June 2002","$68k - March 1999"],
+    estimatedValueDomain: 540000, estimatedValueLow: 460000, estimatedValueHigh: 620000,
+    estimatedRentPropTrack: 535, estimatedRentDomain: 540,
+    floodRisk: "No detected flood overlay", bushfireRisk: "No detected bushfire overlay", heritageRisk: "No detected heritage overlay",
+    features: ["Mid-century architectural design","Floor-to-ceiling windows","High ceilings","Polished floorboards","Morning sun","Spacious hallway","3 bedrooms","Modern bathroom","Neat kitchen","Rear yard","Undercover BBQ area","Undercover carport","Close to University","Close to Maritime College","Close to shopping","Mowbray golf course views"],
+    risks: ["1961 build","Only 1 bathroom","Small 97m² internal area","Potential maintenance compared with newer houses","Current rent is $520 rather than $540-$535 automated estimate"],
+    recommendation: "GOOD VALUE ONLY AT LOW PRICE", targetPrice: "$540k-$550k", maximumPrice: "$560k",
+    notes: "At $550k it is attractive on yield. At $580k+ I would prefer other properties."
+  },
+  {
+    id: 17, address: "23 Karpaty Avenue", suburb: "Newnham", state: "TAS", postcode: "7248",
+    status: "ACTIVE", ranking: null, rating: 8.0,
+    askingPrice: 659000, previousAdvertisedPrice: 649000,
+    rentPerWeek: null, rentalEstimateLow: 540, rentalEstimateMid: 560, rentalEstimateHigh: 565,
+    bedrooms: 3, bathrooms: 1, parking: 1, landSqm: 614, buildingSqm: 108,
+    yearBuiltReported: ["1967 - Domain","1950 - current agent listing"],
+    estimatedValueDomain: 690000, estimatedValueDomainLow: 590000, estimatedValueDomainHigh: 790000, estimatedValuePropTrack: 653000,
+    grossYieldAt560: 4.43, grossYieldAt565: 4.46,
+    floodRisk: "No detected flood overlay", bushfireRisk: "No detected bushfire overlay", heritageRisk: "No detected heritage overlay",
+    historicalSales: ["$445k - May 2022","$220k - June 2007"],
+    features: ["Solid brick","3 bedrooms","1 bathroom","1 car","Approx. 614-615m² land","Approx. 108m² building","Renovated kitchen","Recently installed heat pump","Quiet family location","Close to transport","Close to schools","Close to parks","Close to shopping","Potential investment property"],
+    risks: ["Only 1 bathroom","Older house","Year-built data conflict","Rent approximately $540-$565","Current asking price produces relatively low yield"],
+    recommendation: "BETTER AROUND $620-$630K", targetPrice: "$620k-$630k", maximumPrice: "$640k",
+    notes: "Better property quality than 6 Parua, but current $659k price is too high for the rental return."
+  },
+  {
+    id: 18, address: "4 Borg Court", suburb: "Beaconsfield", state: "QLD", postcode: "4740",
+    status: "CONSIDERED", ranking: null,
+    askingPrice: 700000, rentPerWeek: null,
+    bedrooms: 3, bathrooms: 1, parking: 5, landSqm: 702,
+    features: ["3 bedrooms","1 bathroom","Large 702m² land","5 car capacity"],
+    marketContext: "Vendor reportedly getting close to $700k offer",
+    recommendation: "LESS ATTRACTIVE THAN 2H", notes: "At around $700k it was considered too expensive relative to 2H."
+  },
+  {
+    id: 19, address: "49 Fernleigh Avenue", suburb: "Andergrove", state: "QLD", postcode: "4740",
+    status: "CONSIDERED", detailsAvailable: false,
+    recommendation: "NEEDS RESEARCH", notes: "Property was discussed but detailed figures are not retained in the available record."
+  },
+  {
+    id: 20, address: "58 Eaglemount Road", suburb: "Beaconsfield", state: "QLD", postcode: "4740",
+    status: "CONSIDERED", askingPrice: 679000,
+    bedrooms: 3, bathrooms: 2, parking: 2, landSqm: 805,
+    features: ["3 bedrooms","2 bathrooms","2 car","805m² land"],
+    recommendation: "SECONDARY", notes: "Potentially good land size, but not ranked above 2H."
+  },
+  {
+    id: 21, address: "26 Spindrift Road", suburb: "Clinton", state: "QLD", postcode: "4740",
+    status: "CONSIDERED", detailsAvailable: false,
+    recommendation: "NEEDS RESEARCH", notes: "Property was discussed but detailed figures are not retained in the available record."
+  },
+  {
+    id: 22, address: "8 Lochmaben Court", suburb: "Beaconsfield", state: "QLD", postcode: "4740",
+    status: "CONSIDERED", askingPrice: 649000,
+    bedrooms: 3, bathrooms: 1, parking: 1, landSqm: 800,
+    recommendation: "SECONDARY", notes: "Around $649k asking; less attractive than 2H based on retained information."
+  },
+  {
+    id: 23, address: "12 Deakin Close", suburb: "Gracemere", state: "QLD", postcode: "4702",
+    status: "CONSIDERED", detailsAvailable: false,
+    recommendation: "NEEDS RESEARCH", notes: "Property was mentioned but detailed figures are not retained in the available record."
+  },
+  {
+    id: 24, address: "7 Carlisle Street", suburb: "Waverley", state: "TAS", postcode: "7250",
+    status: "CONSIDERED", detailsAvailable: false,
+    recommendation: "NEEDS RESEARCH", notes: "Property was mentioned but detailed figures are not retained in the available record."
+  }
+];
+
+// ---------- derived helpers ----------
+const money = v => v==null ? '—' : (typeof v==='string' ? v : '$'+Math.round(v).toLocaleString());
+const rentStr = p => p.rentPerWeek ? '$'+p.rentPerWeek : (p.rentalAppraisalLow ? '$'+p.rentalAppraisalLow+'–'+p.rentalAppraisalHigh+'*' : (p.rentalEstimate? '$'+p.rentalEstimate+'*' : '—'));
+
+function priceOf(p){
+  return p.purchasePrice ?? p.offerPrice ?? p.askingPrice ?? p.askingPriceLow ?? p.purchasePriceTarget ?? (typeof p.askingPrice==='string'? null : null);
+}
+function numericPrice(p){
+  const v = priceOf(p);
+  return (typeof v === 'number') ? v : null;
+}
+function yieldOf(p){
+  const cands = [p.grossYieldAtCurrentRent,p.grossYieldAtRent650,p.grossYieldAtRent630,p.grossYieldAt750,p.grossYield,
+    p.grossYieldAt590,p.grossYieldAt530,p.grossYieldAt595,p.grossYieldAt550,p.grossYieldAt560];
+  for(const c of cands){ if(typeof c==='number') return c; }
+  return null;
+}
+
+const tagClassFor = rec => {
+  if(!rec) return 'tag-normal';
+  const r = rec.toUpperCase();
+  if(r.includes('BEST')) return 'tag-best';
+  if(r.includes('STRONG') || r.includes('GOOD VALUE') || r.includes('HIGH UPSIDE')) return 'tag-strong';
+  if(r.includes('SOLD') || r.includes('SECONDARY') || r.includes('NEEDS RESEARCH') || r.includes('LESS ATTRACTIVE')) return 'tag-normal';
+  return 'tag-watch';
+};
+
+let selectedId = 1;
+let stateFilter = 'ALL';
+let activeOnly = false;
+let sortKey = 'rating';
+
+function visibleProps(){
+  let list = properties.filter(p => numericPrice(p) !== null); // only properties with usable pricing appear in charts/table
+  if(stateFilter !== 'ALL') list = list.filter(p => p.state === stateFilter);
+  if(activeOnly) list = list.filter(p => p.status.includes('ACTIVE'));
+  const sortFns = {
+    rating: (a,b) => (b.rating ?? -1) - (a.rating ?? -1),
+    yield: (a,b) => (yieldOf(b) ?? -1) - (yieldOf(a) ?? -1),
+    price: (a,b) => (numericPrice(a) ?? 1e12) - (numericPrice(b) ?? 1e12),
+    rent: (a,b) => ((b.rentPerWeek ?? b.rentalAppraisalLow ?? -1) - (a.rentPerWeek ?? a.rentalAppraisalLow ?? -1)),
+  };
+  list.sort(sortFns[sortKey]);
+  return list;
+}
+
+// ---------- table ----------
+function renderTable(){
+  const list = visibleProps();
+  const body = document.getElementById('tableBody');
+  body.innerHTML = list.map((p,i) => {
+    const r = p.rating ?? 0;
+    return `<tr data-id="${p.id}" class="${p.id===selectedId?'selected':''}">
+      <td class="num">${i+1}</td>
+      <td class="addr-cell"><b>${p.address}</b><span>${p.suburb}, ${p.state}</span></td>
+      <td><span class="badge-state ${p.state}">${p.state}</span></td>
+      <td>${p.status}</td>
+      <td class="num">${money(priceOf(p))}</td>
+      <td class="num">${rentStr(p)}</td>
+      <td class="num">${yieldOf(p)!=null ? yieldOf(p).toFixed(2)+'%' : '—'}</td>
+      <td>${p.rating!=null ? `<span class="rating-bar"><i style="width:${(r/10)*100}%"></i></span>${r.toFixed(1)}` : '—'}</td>
+    </tr>`;
+  }).join('');
+  body.querySelectorAll('tr').forEach(row=>{
+    row.addEventListener('click', ()=>{ selectedId = Number(row.dataset.id); renderAll(); });
+  });
+}
+
+// ---------- detail card ----------
+function renderDetail(){
+  const p = properties.find(x=>x.id===selectedId) || visibleProps()[0];
+  const el = document.getElementById('detailCard');
+  if(!p){ el.innerHTML = '<p style="color:var(--text-faint)">No property selected.</p>'; return; }
+
+  const statsHtml = [
+    ['Price', money(priceOf(p))],
+    ['Rent /wk', rentStr(p)],
+    ['Yield', yieldOf(p)!=null ? yieldOf(p).toFixed(2)+'%' : '—'],
+    ['Beds / baths', (p.bedrooms??'—')+' / '+(p.bathrooms??'—')],
+    ['Land', p.landSqm ? p.landSqm+' m²' : '—'],
+    ['Built', p.yearBuilt ?? '—'],
+  ].map(([l,n]) => `<div class="d-stat"><span class="n">${n}</span><span class="l">${l}</span></div>`).join('');
+
+  const featHtml = p.features ? `<div class="d-section"><h4>WHAT IT OFFERS</h4><ul class="feat">${p.features.slice(0,6).map(f=>`<li>${f}</li>`).join('')}</ul></div>` : '';
+  const riskHtml = p.risks ? `<div class="d-section"><h4>RISK FLAGS</h4><ul class="risks">${p.risks.map(f=>`<li>${f}</li>`).join('')}</ul></div>` : '';
+  const floodHtml = p.floodRisk ? `<div class="d-section"><h4>FLOOD / OVERLAY</h4><p style="font-size:13.5px;color:var(--text-dim);margin:0">${p.floodRisk}</p></div>` : '';
+  const priceGuideHtml = (p.targetPrice || p.maximumPrice || p.walkAwayPrice) ? `<div class="d-section"><h4>PRICE GUIDANCE</h4><p style="font-size:13.5px;color:var(--text-dim);margin:0">
+      ${p.targetPrice ? 'Target: <b style="color:var(--text)">'+p.targetPrice+'</b>. ' : ''}
+      ${p.maximumPrice ? 'Max: '+p.maximumPrice+'. ' : ''}
+      ${p.walkAwayPrice ? 'Walk away above: '+p.walkAwayPrice+'.' : ''}
+    </p></div>` : '';
+
+  el.innerHTML = `
+    <h2 class="d-addr">${p.address}</h2>
+    <p class="d-loc">${p.suburb}, ${p.state} ${p.postcode||''} · ${p.status}</p>
+    <span class="d-tag ${tagClassFor(p.recommendation)}">${p.recommendation || 'UNRATED'}</span>
+    <div class="d-stats">${statsHtml}</div>
+    ${priceGuideHtml}
+    ${featHtml}
+    ${riskHtml}
+    ${floodHtml}
+    ${p.notes ? `<p class="d-note">${p.notes}</p>` : ''}
+  `;
+}
+
+// ---------- charts ----------
+let scatterChart, compareChart;
+const colorFor = st => st==='QLD' ? '#c1893c' : '#4f8291';
+
+function buildScatter(){
+  const ctx = document.getElementById('scatterChart');
+  const list = visibleProps().filter(p=>yieldOf(p)!=null && numericPrice(p)!=null);
+  const data = list.map(p=>({x:numericPrice(p), y:yieldOf(p), r: 5+((p.rating||7)-7)*6, id:p.id, state:p.state, addr:p.address}));
+
+  if(scatterChart) scatterChart.destroy();
+  scatterChart = new Chart(ctx, {
+    type:'bubble',
+    data:{ datasets:[{
+      data,
+      backgroundColor: data.map(d=> d.id===selectedId ? '#e8e3d6' : colorFor(d.state)+'cc'),
+      borderColor: data.map(d=> d.id===selectedId ? '#e8e3d6' : colorFor(d.state)),
+      borderWidth: data.map(d=> d.id===selectedId ? 2 : 1),
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      onClick:(evt, els)=>{
+        if(els.length){ selectedId = data[els[0].index].id; renderAll(); }
+      },
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1d262d', borderColor:'#2a333a', borderWidth:1,
+          titleFont:{family:'IBM Plex Mono'}, bodyFont:{family:'IBM Plex Mono', size:11},
+          callbacks:{
+            title: (items)=> data[items[0].dataIndex].addr,
+            label: (item)=> [`Price: $${item.raw.x.toLocaleString()}`, `Yield: ${item.raw.y.toFixed(2)}%`]
+          }
+        }
+      },
+      scales:{
+        x:{ title:{display:true,text:'PURCHASE PRICE (AUD)',color:'#5c646b',font:{family:'IBM Plex Mono',size:10}},
+            ticks:{color:'#8b939b',font:{family:'IBM Plex Mono',size:10}, callback:v=>'$'+(v/1000)+'k'},
+            grid:{color:'#2a333a'} },
+        y:{ title:{display:true,text:'GROSS YIELD (%)',color:'#5c646b',font:{family:'IBM Plex Mono',size:10}},
+            ticks:{color:'#8b939b',font:{family:'IBM Plex Mono',size:10}},
+            grid:{color:'#2a333a'} }
+      }
+    }
+  });
+}
+
+let compareMetric = 'rating';
+function buildCompare(){
+  const ctx = document.getElementById('compareChart');
+  const list = properties.filter(p=>p.rating!=null).sort((a,b)=>b.rating-a.rating).slice(0,8);
+  const valueFor = p => compareMetric==='rating' ? p.rating : compareMetric==='yield' ? (yieldOf(p)||0) : (numericPrice(p)||0);
+  const labelFmt = v => compareMetric==='price' ? '$'+Math.round(v/1000)+'k' : compareMetric==='yield' ? v.toFixed(2)+'%' : v.toFixed(1);
+
+  if(compareChart) compareChart.destroy();
+  compareChart = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: list.map(p=>p.address),
+      datasets:[{
+        data: list.map(valueFor),
+        backgroundColor: list.map(p=> p.id===selectedId ? '#e8e3d6' : colorFor(p.state)),
+        borderRadius:3,
+        maxBarThickness:46,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      onClick:(evt, els)=>{ if(els.length){ selectedId = list[els[0].index].id; renderAll(); } },
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1d262d', borderColor:'#2a333a', borderWidth:1,
+          bodyFont:{family:'IBM Plex Mono', size:11},
+          callbacks:{ label:item=> labelFmt(item.raw) }
+        }
+      },
+      scales:{
+        x:{ ticks:{color:'#8b939b', font:{family:'IBM Plex Mono',size:9.5}, maxRotation:38, minRotation:38}, grid:{display:false} },
+        y:{ ticks:{color:'#8b939b', font:{family:'IBM Plex Mono',size:10}, callback:labelFmt}, grid:{color:'#2a333a'} }
+      }
+    }
+  });
+}
+
+let stateDonut, statusBar, yieldByStateChart;
+
+function buildBreakdown(){
+  const priced = properties.filter(p => numericPrice(p) !== null);
+
+  // by state — donut
+  const stateCounts = { QLD: priced.filter(p=>p.state==='QLD').length, TAS: priced.filter(p=>p.state==='TAS').length };
+  if(stateDonut) stateDonut.destroy();
+  stateDonut = new Chart(document.getElementById('stateDonut'), {
+    type:'doughnut',
+    data:{
+      labels:['Queensland','Tasmania'],
+      datasets:[{ data:[stateCounts.QLD, stateCounts.TAS], backgroundColor:['#c1893c','#4f8291'], borderColor:'#11161a', borderWidth:3 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{
+        legend:{ position:'bottom', labels:{ color:'#8b939b', font:{family:'IBM Plex Mono', size:11}, boxWidth:10, padding:14 } },
+        tooltip:{ backgroundColor:'#1d262d', borderColor:'#2a333a', borderWidth:1, bodyFont:{family:'IBM Plex Mono', size:11} }
+      }
+    }
+  });
+
+  // by status — horizontal bar
+  const statusOrder = ['ACTIVE','ACTIVE / AGREED','UNDER OFFER','CONSIDERED','SOLD','SOLD / FRIEND\'S PURCHASE'];
+  const statusCounts = {};
+  priced.forEach(p => { statusCounts[p.status] = (statusCounts[p.status]||0)+1; });
+  const statusLabels = Object.keys(statusCounts).sort((a,b)=> statusCounts[b]-statusCounts[a]);
+  if(statusBar) statusBar.destroy();
+  statusBar = new Chart(document.getElementById('statusBar'), {
+    type:'bar',
+    data:{
+      labels: statusLabels,
+      datasets:[{ data: statusLabels.map(s=>statusCounts[s]), backgroundColor:'#c1893c', borderRadius:3, maxBarThickness:22 }]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1d262d', borderColor:'#2a333a', borderWidth:1, bodyFont:{family:'IBM Plex Mono', size:11} } },
+      scales:{
+        x:{ ticks:{color:'#8b939b', font:{family:'IBM Plex Mono',size:10}, stepSize:1}, grid:{color:'#2a333a'} },
+        y:{ ticks:{color:'#8b939b', font:{family:'IBM Plex Mono',size:10}}, grid:{display:false} }
+      }
+    }
+  });
+
+  // avg yield by state — bar
+  const qldYields = priced.filter(p=>p.state==='QLD').map(yieldOf).filter(v=>v!=null);
+  const tasYields = priced.filter(p=>p.state==='TAS').map(yieldOf).filter(v=>v!=null);
+  const avg = arr => arr.reduce((a,b)=>a+b,0)/arr.length;
+  if(yieldByStateChart) yieldByStateChart.destroy();
+  yieldByStateChart = new Chart(document.getElementById('yieldByState'), {
+    type:'bar',
+    data:{
+      labels:['Queensland','Tasmania'],
+      datasets:[{ data:[avg(qldYields), avg(tasYields)], backgroundColor:['#c1893c','#4f8291'], borderRadius:3, maxBarThickness:60 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1d262d', borderColor:'#2a333a', borderWidth:1, bodyFont:{family:'IBM Plex Mono', size:11}, callbacks:{ label:item=>item.raw.toFixed(2)+'% avg yield' } } },
+      scales:{
+        x:{ ticks:{color:'#8b939b', font:{family:'IBM Plex Mono',size:10.5}}, grid:{display:false} },
+        y:{ ticks:{color:'#8b939b', font:{family:'IBM Plex Mono',size:10}, callback:v=>v+'%'}, grid:{color:'#2a333a'} }
+      }
+    }
+  });
+}
+
+function renderAll(){
+  renderTable();
+  renderDetail();
+  buildScatter();
+  buildCompare();
+  buildBreakdown();
+}
+
+// ---------- controls ----------
+document.getElementById('stateFilters').addEventListener('click', e=>{
+  const btn = e.target.closest('.pill'); if(!btn) return;
+  if(btn.dataset.flag==='active-only'){
+    activeOnly = !activeOnly;
+    btn.classList.toggle('active', activeOnly);
+  } else if(btn.dataset.state){
+    stateFilter = btn.dataset.state;
+    document.querySelectorAll('#stateFilters .pill[data-state]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderAll();
+});
+document.getElementById('sortSel').addEventListener('change', e=>{ sortKey = e.target.value; renderAll(); });
+document.getElementById('metricToggle').addEventListener('click', e=>{
+  const btn = e.target.closest('.pill'); if(!btn) return;
+  compareMetric = btn.dataset.metric;
+  document.querySelectorAll('#metricToggle .pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildCompare();
+});
+
+if (typeof Chart === 'undefined') {
+  document.querySelectorAll('.chart-box').forEach(box=>{
+    box.innerHTML = '<p style="color:var(--warn);font-family:\'IBM Plex Mono\',monospace;font-size:12px;padding:20px 0">Chart library failed to load — check your internet connection and refresh.</p>';
+  });
+  renderTable();
+  renderDetail();
+} else {
+  renderAll();
+}
+</script>
+</body>
+</html>
